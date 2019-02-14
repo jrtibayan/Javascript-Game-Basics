@@ -3,8 +3,7 @@
 	
 	DETAILS OF THIS COMMIT
 
-	Created a helper function that would help me make objects for the game
-	I used that function to create the game character which is now a red block
+	Created an obstacle
 
 -->
 <html>
@@ -60,6 +59,22 @@
 			function updateGameArea() {
 				
 				myGameArea.frameNo += 1;
+				
+				if (myGameArea.frameNo === 1) { // only update if this is true
+					x = myGameArea.canvas.width;
+					width = 10; // width of the obstackles
+					minHeight = 20; // min height of top obstacle
+					minGap = 50; // min height of gap
+					maxGap = 100; // max height of gap
+					gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap); // generate random number from minGap to maxGap to be used as the height of the gap
+					maxHeight = myGameArea.canvas.height-gap-minHeight; // compute for max height the top obstacle is allowed to have
+					height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight); // generate random number from minHeight to maxHeight
+					
+					myObstacles1 = new component(width, height, "green", 150, 0); // create top obstacle object
+					myObstacles2 = new component(width, myGameArea.canvas.height-height-gap, "blue", 150, height+gap); // create bottom obstacle object
+					myObstacles1.update(); // draw the obstacle
+					myObstacles2.update();
+				}
 				
 				myGamePiece.update();
 				
