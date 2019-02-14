@@ -3,7 +3,8 @@
 	
 	DETAILS OF THIS COMMIT
 
-	Added some styling to make canvas more noticeable 
+	Created a helper function that would help me make objects for the game
+	I used that function to create the game character which is now a red block
 
 -->
 <html>
@@ -21,6 +22,7 @@
 		<script>
 		
 			function startGame() {
+				myGamePiece = new component(30, 30, "red", 10, 120); // create my character object
 				myGameArea.start();
 			}
 
@@ -31,7 +33,36 @@
 					this.canvas.height = 270;
 					this.context = this.canvas.getContext("2d");
 					document.body.insertBefore(this.canvas, document.body.childNodes[0]); // append the canvas to the body
+					this.frameNo = 0; // keep track of frame no
+					this.interval = setInterval(updateGameArea, 20); // continuously run updateGameArea function
 				}
+			}
+			
+			// this will be used to create the character and other objects
+			// each will have their own properties like x and y position, color and size of width and height
+			// it will also let the objects draw themselves with the update function and change their position with the
+			function component(width, height, color, x, y) {
+			
+				this.width = width;
+				this.height = height;
+				this.x = x;
+				this.y = y;
+				
+				// draw the object
+				this.update = function() {
+					ctx = myGameArea.context;
+					ctx.fillStyle = color;
+					ctx.fillRect(this.x, this.y, this.width, this.height);
+				}
+				
+			}
+			
+			function updateGameArea() {
+				
+				myGameArea.frameNo += 1;
+				
+				myGamePiece.update();
+				
 			}
 			
 		</script>
