@@ -3,14 +3,34 @@
 	
 	DETAILS OF THIS COMMIT
 
-	Since this is my first project learning game dev,
-	I added this section to summarize what the changes does each commit
+	Added the area that will contain the javascript code
+	Added startGame function that would ask the myGameArea object to append the canvas to the html body
+	Added a link to html body tag that will tell it to run the startGame function onload
 
 -->
 <html>
 	<head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	</head>
-	<body>
+	<body onload="startGame()">
+	
+		<script>
+		
+			function startGame() {
+				myGameArea.start();
+			}
+
+			var myGameArea = {
+				canvas : document.createElement("canvas"), // this will create a canvas that will be inserted later to the html body
+				start : function() {
+					this.canvas.width = 480; // set the width and height of the canvas before it is appended to the body
+					this.canvas.height = 270;
+					this.context = this.canvas.getContext("2d");
+					document.body.insertBefore(this.canvas, document.body.childNodes[0]); // append the canvas to the body
+				}
+			}
+			
+		</script>
+		
 	</body>
 </html>
