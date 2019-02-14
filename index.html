@@ -3,8 +3,20 @@
 	
 	DETAILS OF THIS COMMIT
 
-	Created an obstacle
-
+	Added button to control the character
+	Added function accelerate that will change value of the character gravity property
+	If the button is pressed, accelerate will pass a negative value for gravity and will make object go up
+	And when button is released, the accelerate will pass a possitive value for gravity and make the object go down\
+	A clear function was added to myGameArea since we are drawing over and over to the canvas,
+		we need to clear the canvas so the past object drawn will be erased
+	    and then draw new one to make the object seem moving
+	Added some more variable to the component function which is speedY, gravity and gravitySpeed
+		every object should have its own speed when going up or down and here that is speedY
+		for now speedY is 0 since right now we only make the character go up and down using gravity
+		speedY use case in the future may be for example you get a power up and make you move faster
+		gravity is fixed and will increament to gravitySpeed making it faster and faster over time
+	Added function to change the coordinates of an object so that its on the new position when it draw a new one
+	
 -->
 <html>
 	<head>
@@ -34,6 +46,9 @@
 					document.body.insertBefore(this.canvas, document.body.childNodes[0]); // append the canvas to the body
 					this.frameNo = 0; // keep track of frame no
 					this.interval = setInterval(updateGameArea, 20); // continuously run updateGameArea function
+				},
+				clear : function() { // clears the entire canvas
+					this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 				}
 			}
 			
@@ -47,6 +62,11 @@
 				this.x = x;
 				this.y = y;
 				
+				this.speedY = 0; // the speed of object going up and down
+				
+				this.gravity = 0; // the amount to be increased to gravitySpeed
+				this.gravitySpeed = 0; // the amount to be added to get new y coordinate
+				
 				// draw the object
 				this.update = function() {
 					ctx = myGameArea.context;
@@ -54,10 +74,16 @@
 					ctx.fillRect(this.x, this.y, this.width, this.height);
 				}
 				
+				this.newPos = function() {
+					this.gravitySpeed += this.gravity; // gravitySpeed will go faster and faster when button is pressed
+					this.y += this.speedY + this.gravitySpeed; // new y position depends on how fast speedY is and the gravity
+				}
+				
 			}
 			
 			function updateGameArea() {
 				
+				myGameArea.clear(); // clear everything first before start to draw again
 				myGameArea.frameNo += 1;
 				
 				if (myGameArea.frameNo === 1) { // only update if this is true
@@ -76,11 +102,24 @@
 					myObstacles2.update();
 				}
 				
+				myGamePiece.newPos(); // update the position of x since it may have changed due to gravity
 				myGamePiece.update();
 				
 			}
 			
+			// this tells the character to move up or down
+			// if the accelleration is negative then the item will go up and down if its possitive
+			function accelerate(n) {
+				myGamePiece.gravity = n;
+			}
+			
 		</script>
+		
+		<br>
+		<!-- the button below will execute accelerate function making the item move either up or down -->
+		<button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.05)">ACCELERATE</button>
+		<p>Use the ACCELERATE button to stay in the air</p>
+		<p>How long can you stay alive?</p>
 		
 	</body>
 </html>
