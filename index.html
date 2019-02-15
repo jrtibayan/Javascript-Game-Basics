@@ -3,19 +3,10 @@
 	
 	DETAILS OF THIS COMMIT
 
-	Added button to control the character
-	Added function accelerate that will change value of the character gravity property
-	If the button is pressed, accelerate will pass a negative value for gravity and will make object go up
-	And when button is released, the accelerate will pass a possitive value for gravity and make the object go down\
-	A clear function was added to myGameArea since we are drawing over and over to the canvas,
-		we need to clear the canvas so the past object drawn will be erased
-	    and then draw new one to make the object seem moving
-	Added some more variable to the component function which is speedY, gravity and gravitySpeed
-		every object should have its own speed when going up or down and here that is speedY
-		for now speedY is 0 since right now we only make the character go up and down using gravity
-		speedY use case in the future may be for example you get a power up and make you move faster
-		gravity is fixed and will increament to gravitySpeed making it faster and faster over time
-	Added function to change the coordinates of an object so that its on the new position when it draw a new one
+	Create the obstacle off screen
+	Made the obstacle move
+	Created a helper function to check for frame interval
+	Generate endless obstacles that is distanced depending on set frame interval
 	
 -->
 <html>
@@ -31,6 +22,8 @@
 	<body onload="startGame()">
 	
 		<script>
+		
+			var myObstacles = [];
 		
 			function startGame() {
 				myGamePiece = new component(30, 30, "red", 10, 120); // create my character object
@@ -86,9 +79,10 @@
 				myGameArea.clear(); // clear everything first before start to draw again
 				myGameArea.frameNo += 1;
 				
-				if (myGameArea.frameNo === 1) { // only update if this is true
+				if (myGameArea.frameNo === 1 || everyinterval(150)) { // only update if this is true
+					console.log(myGameArea.frameNo);
 					x = myGameArea.canvas.width;
-					width = 10; // width of the obstackles
+					width = 10; // width of the obstacles
 					minHeight = 20; // min height of top obstacle
 					minGap = 50; // min height of gap
 					maxGap = 100; // max height of gap
@@ -96,15 +90,28 @@
 					maxHeight = myGameArea.canvas.height-gap-minHeight; // compute for max height the top obstacle is allowed to have
 					height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight); // generate random number from minHeight to maxHeight
 					
-					myObstacles1 = new component(width, height, "green", 150, 0); // create top obstacle object
-					myObstacles2 = new component(width, myGameArea.canvas.height-height-gap, "blue", 150, height+gap); // create bottom obstacle object
-					myObstacles1.update(); // draw the obstacle
-					myObstacles2.update();
+					// both top and bottom obstacle is pushed to an array
+					// so we can loop throught that to redraw each obstacle every frame
+					myObstacles.push(new component(width, height, "green", x, 0));
+					myObstacles.push(new component(width, myGameArea.canvas.height-height-gap, "blue", x, height+gap));
+				}
+				
+				// loop through the list of obstacles
+				for (i = 0; i < myObstacles.length; i += 1) {
+					myObstacles[i].x += -1; // make each obstacle move by reduxing value from x coordinate
+					myObstacles[i].update(); // draw the obstacle
 				}
 				
 				myGamePiece.newPos(); // update the position of x since it may have changed due to gravity
 				myGamePiece.update();
 				
+			}
+			
+			function everyinterval(n) {
+				if ((myGameArea.frameNo-1) % n === 0)
+					return true;
+				else
+					return false;
 			}
 			
 			// this tells the character to move up or down
