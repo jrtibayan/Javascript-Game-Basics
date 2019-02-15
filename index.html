@@ -3,10 +3,9 @@
 	
 	DETAILS OF THIS COMMIT
 
-	Create the obstacle off screen
-	Made the obstacle move
-	Created a helper function to check for frame interval
-	Generate endless obstacles that is distanced depending on set frame interval
+	Added collition detection
+	Stop character if character is going higher than the top wall or lower than the bottom wall
+	Stop if character hits an obstacle
 	
 -->
 <html>
@@ -70,11 +69,51 @@
 				this.newPos = function() {
 					this.gravitySpeed += this.gravity; // gravitySpeed will go faster and faster when button is pressed
 					this.y += this.speedY + this.gravitySpeed; // new y position depends on how fast speedY is and the gravity
+					this.hitTopBottom();
+				}
+				
+				// limit character y to only go within the screen
+				this.hitTopBottom = function() {
+				
+					var bottomWall = myGameArea.canvas.height - this.height;
+					if (this.y > bottomWall) {
+						this.y = bottomWall;
+						this.gravitySpeed = 0;
+					}
+					
+					var topWall = 0;
+					if (this.y < topWall) {
+						this.y = topWall;
+						this.gravitySpeed = 0;
+					}
+				}
+				
+				this.crashWith = function(otherobj) {
+					var myleft = this.x;
+					var myright = this.x + (this.width);
+					var mytop = this.y;
+					var mybottom = this.y + (this.height);
+					var otherleft = otherobj.x;
+					var otherright = otherobj.x + (otherobj.width);
+					var othertop = otherobj.y;
+					var otherbottom = otherobj.y + (otherobj.height);
+					var crash = true;
+					if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
+						crash = false;
+					}
+					return crash;
 				}
 				
 			}
 			
 			function updateGameArea() {
+			
+				for (i = 0; i < myObstacles.length; i += 1) {
+					if (myGamePiece.crashWith(myObstacles[i])) {
+						console.log('crash');
+						return;
+					}
+				}
 				
 				myGameArea.clear(); // clear everything first before start to draw again
 				myGameArea.frameNo += 1;
