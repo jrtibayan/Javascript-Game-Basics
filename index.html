@@ -3,9 +3,8 @@
 	
 	DETAILS OF THIS COMMIT
 
-	Added collition detection
-	Stop character if character is going higher than the top wall or lower than the bottom wall
-	Stop if character hits an obstacle
+	Score is now displayed
+	A point is added each frame the player is alive
 	
 -->
 <html>
@@ -22,10 +21,14 @@
 	
 		<script>
 		
+			var myGamePiece;
 			var myObstacles = [];
+			var myScore;
 		
 			function startGame() {
 				myGamePiece = new component(30, 30, "red", 10, 120); // create my character object
+				myGamePiece.gravity = 0.05;
+				myScore = new component("30px", "Consolas", "black", 280, 40, "text");
 				myGameArea.start();
 			}
 
@@ -47,13 +50,16 @@
 			// this will be used to create the character and other objects
 			// each will have their own properties like x and y position, color and size of width and height
 			// it will also let the objects draw themselves with the update function and change their position with the
-			function component(width, height, color, x, y) {
-			
+			function component(width, height, color, x, y, type) {
+				
+				this.type = type;
+				this.score = 0;
 				this.width = width;
 				this.height = height;
 				this.x = x;
 				this.y = y;
 				
+				this.speedX = 0;
 				this.speedY = 0; // the speed of object going up and down
 				
 				this.gravity = 0; // the amount to be increased to gravitySpeed
@@ -62,8 +68,15 @@
 				// draw the object
 				this.update = function() {
 					ctx = myGameArea.context;
-					ctx.fillStyle = color;
-					ctx.fillRect(this.x, this.y, this.width, this.height);
+					if (this.type == "text") {
+						ctx.font = this.width + " " + this.height;
+						ctx.fillStyle = color;
+						ctx.fillText(this.text, this.x, this.y);
+					} else {
+						ctx.fillStyle = color;
+						ctx.fillRect(this.x, this.y, this.width, this.height);
+					}
+					
 				}
 				
 				this.newPos = function() {
@@ -140,6 +153,9 @@
 					myObstacles[i].x += -1; // make each obstacle move by reduxing value from x coordinate
 					myObstacles[i].update(); // draw the obstacle
 				}
+				
+				myScore.text="SCORE: " + myGameArea.frameNo;
+				myScore.update();
 				
 				myGamePiece.newPos(); // update the position of x since it may have changed due to gravity
 				myGamePiece.update();
